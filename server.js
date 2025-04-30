@@ -24,11 +24,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("message", ({ roomId, message }) => {
-    console.log(`📩 Received message for ${roomId}:`, message);
-    console.log("Active rooms:", socket.rooms);
-    socket.to(roomId).emit("message", message);
+    console.log(`📤 Broadcasting to room ${roomId} (Members: ${io.sockets.adapter.rooms.get(roomId)?.size || 0})`);
+    
+    // Broadcast to ALL room members including sender
+    io.to(roomId).emit("message", message); // Changed from socket.to() to io.to()
+    
+    // Verify room membership
+    console.log("Room Members:", io.sockets.adapter.rooms.get(roomId));
   });
-
   socket.on("disconnect", () => {
     console.log("🔴 Disconnected:", socket.id);
   });
